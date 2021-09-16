@@ -2,10 +2,15 @@ module GOL
   extend self
 
   def print_grid(width, height, fitness_test:, glyph:)
+    fit_rows = (0..height).map { |y|
+      (0..width).map { |x| fitness_test.(x,y) ? [x,y] : nil }
+    }
+    fit_cells = fit_rows.inject(Array.new) { |mem, e| mem + e.compact }
+
     t = ""
     (0..height).each do |y|
       (0..width).each do |x|
-        fit = fitness_test.(x,y)
+        fit = fit_cells.include?([x,y])
         t << glyph.(fit)
       end
       t << "\n"
