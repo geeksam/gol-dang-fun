@@ -7,6 +7,10 @@ RSpec.describe "the game of life (don't talk to me about life)" do
     verify_board { |x,y| x == 1 && y == 2 }
   end
 
+  specify "a square survives" do
+    verify_board { |x,y| (1..2).cover?(x) && (1..2).cover?(y) }
+  end
+
 
 
   def verify_board(&board)
