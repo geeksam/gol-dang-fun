@@ -36,11 +36,11 @@ RSpec.describe "the game of life (don't talk to me about life)" do
 
   def iterate_fitness_test(iterations=2, &fitness_test)
     frames = []
-    frames << GOL.print_grid(5, 4) { |x,y| fitness_test.(x,y) ? "x" : "." }
+    frames << GOL.print_grid(GRID_WIDTH, GRID_HEIGHT) { |x,y| fitness_test.(x,y) ? "x" : "." }
     # start at 2 because we had to seed the first one?
     (2..iterations).each do
       fitness_test = GOL.advance_turn(fitness_test)
-      frames << GOL.print_grid(5, 4) { |x,y| fitness_test.(x,y) ? "x" : "." }
+      frames << GOL.print_grid(GRID_WIDTH, GRID_HEIGHT) { |x,y| fitness_test.(x,y) ? "x" : "." }
     end
     frames.join("\n--NEXT TURN--\n\n")
   end
