@@ -20,6 +20,10 @@ RSpec.describe "the game of life (don't talk to me about life)" do
     }
   end
 
+  specify "a regular old blinker does whatever it does" do
+    verify_board(iterations: 4) { |x,y| (1..3).cover?(x) && y == 2 }
+  end
+
 
 
   def verify_board(iterations: 2, &board)
