@@ -26,6 +26,18 @@ RSpec.describe "the game of life (don't talk to me about life)" do
     verify_fitness_test(iterations: 4) { |x,y| (1..3).cover?(x) && y == 2 }
   end
 
+  specify "a regular old blinker does whatever it does, but not in a way that hastens the heat death of the universe" do
+    calls = 0
+    iterate_fitness_test(1) { |x,y| calls += 1 ; (1..3).cover?(x) && y == 2 }
+    expect( calls ).to eq( (GRID_WIDTH + 1) * (GRID_HEIGHT + 1) )
+
+    pending "some refactoring..."
+    calls = 0
+    iterate_fitness_test(2) { |x,y| calls += 1 ; (1..3).cover?(x) && y == 2 }
+    expect( calls ).to eq( (GRID_WIDTH + 1) * (GRID_HEIGHT + 1) )
+  end
+
+
 
 
   def verify_fitness_test(iterations: 2, &fitness_test)
