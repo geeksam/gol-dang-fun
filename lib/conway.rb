@@ -1,11 +1,12 @@
 module GOL
   extend self
 
-  def print_grid(width, height, &fitness_test)
+  def print_grid(width, height, fitness_test:, glyph:)
     t = ""
     (0..height).each do |y|
       (0..width).each do |x|
-        t << fitness_test.call(x,y).to_s
+        fit = fitness_test.(x,y)
+        t << glyph.(fit)
       end
       t << "\n"
     end
@@ -14,12 +15,13 @@ module GOL
 
   def advance_turn(fitness_test)
     next_fitness_test = ->(x,y) {
+      maybe_cell = ->(x,y) { fitness_test.(x,y) ? [x,y] : nil }
       living_neighbors = [
-        fitness_test.(x-1, y-1), fitness_test.(x, y-1), fitness_test.(x+1, y-1),
-        fitness_test.(x-1, y-0),                        fitness_test.(x+1, y-0),
-        fitness_test.(x-1, y+1), fitness_test.(x, y+1), fitness_test.(x+1, y+1),
-      ].map { |e| e ? 1 : 0 }.sum
-      living_neighbors == 3 || (living_neighbors == 2 && fitness_test.(x,y))
+        maybe_cell.(x-1, y-1), maybe_cell.(x, y-1), maybe_cell.(x+1, y-1),
+        maybe_cell.(x-1, y-0),                      maybe_cell.(x+1, y-0),
+        maybe_cell.(x-1, y+1), maybe_cell.(x, y+1), maybe_cell.(x+1, y+1),
+      ].compact
+      living_neighbors.length == 3 || (living_neighbors.length == 2 && fitness_test.(x,y))
     }
     next_fitness_test
   end
