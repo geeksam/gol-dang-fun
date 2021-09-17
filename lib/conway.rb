@@ -23,15 +23,7 @@ module GOL
   def advance_turn(fitness_test)
     next_fitness_test = ->(x,y) {
       maybe_cell = maybe_cell_from(&fitness_test)
-
-      neighbors = [
-        [ x-1, y-1 ], [ x, y-1 ], [ x+1, y-1 ],
-        [ x-1, y   ],             [ x+1, y   ],
-        [ x-1, y+1 ], [ x, y+1 ], [ x+1, y+1 ],
-      ]
-
-      living_neighbors = neighbors.map(&maybe_cell).compact
-
+      living_neighbors = neighbors(x,y).map(&maybe_cell).compact
       living_neighbors.length == 3 || (living_neighbors.length == 2 && fitness_test.(x,y))
     }
     next_fitness_test
@@ -40,6 +32,14 @@ module GOL
 
 
   private
+
+  def neighbors(x,y)
+    [
+      [ x-1, y-1 ], [ x, y-1 ], [ x+1, y-1 ],
+      [ x-1, y   ],             [ x+1, y   ],
+      [ x-1, y+1 ], [ x, y+1 ], [ x+1, y+1 ],
+    ]
+  end
 
   def maybe_cell_from(&fitness_test)
     ->(*coords) {
