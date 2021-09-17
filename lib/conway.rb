@@ -12,15 +12,12 @@ module GOL
   def print_grid(width, height, fitness_test:, glyph:)
     board = fit_cells(width, height, &fitness_test)
 
-    t = ""
-    (0..height).each do |y|
-      (0..width).each do |x|
+    (0..height).map { |y|
+      (0..width).map { |x|
         is_fit = board.include?([x,y])
-        t << glyph.(is_fit)
-      end
-      t << "\n"
-    end
-    t
+        glyph.(is_fit)
+      }.join
+    }.join("\n") + "\n" # the final newline is just to match the already-approved output
   end
 
   def advance_turn(fitness_test)
