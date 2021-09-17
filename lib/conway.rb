@@ -6,7 +6,7 @@ module GOL
     fit_rows = (0..height).map { |y|
       (0..width).map { |x| maybe_cell.(x,y) }.compact
     }
-    fit_rows.inject(Array.new) { |mem, e| mem + e }
+    flatten_rows(fit_rows)
   end
 
   def print_grid(width, height, fitness_test:, glyph:)
@@ -46,6 +46,10 @@ module GOL
       candidate_cell = coords.flatten
       fitness_test.(*candidate_cell) ? candidate_cell : nil
     }
+  end
+
+  def flatten_rows(rows)
+    rows.inject(Array.new) { |mem, e| mem + e }
   end
 
 end
