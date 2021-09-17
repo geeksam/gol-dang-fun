@@ -2,7 +2,7 @@ module GOL
   extend self
 
   def fit_cells(width, height, &fitness_test)
-    maybe_cell = ->(x,y) { fitness_test.(x,y) ? [x,y] : nil }
+    maybe_cell = maybe_cell_from(&fitness_test)
     fit_rows = (0..height).map { |y|
       (0..width).map { |x| maybe_cell.(x,y) }.compact
     }
@@ -25,8 +25,7 @@ module GOL
 
   def advance_turn(fitness_test)
     next_fitness_test = ->(x,y) {
-      maybe_cell = ->(coords) { fitness_test.(*coords) ? [x,y] : nil }
-      #                                       ^ unpack here so we can use `&maybe_cell` when mapping neighbors
+      maybe_cell = maybe_cell_from(&fitness_test)
 
       neighbors = [
         [ x-1, y-1 ], [ x, y-1 ], [ x+1, y-1 ],
@@ -39,6 +38,17 @@ module GOL
       living_neighbors.length == 3 || (living_neighbors.length == 2 && fitness_test.(x,y))
     }
     next_fitness_test
+  end
+
+
+
+  private
+
+  def maybe_cell_from(&fitness_test)
+    ->(*coords) {
+      candidate_cell = coords.flatten
+      fitness_test.(*candidate_cell) ? candidate_cell : nil
+    }
   end
 
 end
