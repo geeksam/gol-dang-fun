@@ -21,12 +21,20 @@ module GOL
   end
 
   def advance_turn(fitness_test)
+    advance_turn_call_count = 0
     next_fitness_test = ->(x,y) {
       maybe_cell = maybe_cell_from(&fitness_test)
-      living_neighbors = neighbors(x,y).map(&maybe_cell).compact
-      living_neighbors.length == 3 || (living_neighbors.length == 2 && fitness_test.(x,y))
+      living_neighbors_and_call_counts = neighbors(x,y).map(&maybe_cell)
+      living_neighbors, call_counts = *living_neighbors_and_call_counts.transpose.map(&:compact)
+
+      is_fit_if_2_neighbors, extra_call_count = fitness_test.(x,y)
+      is_fit = living_neighbors.length == 3 || (living_neighbors.length == 2 && is_fit_if_2_neighbors)
+      call_count = (call_counts.sum || 0) + extra_call_count
+      call_count += 1 # for this one
+      advance_turn_call_count = call_count
+      [ is_fit, call_count ]
     }
-    next_fitness_test
+    return next_fitness_test, advance_turn_call_count
   end
 
 
@@ -44,7 +52,9 @@ module GOL
   def maybe_cell_from(&fitness_test)
     ->(*coords) {
       candidate_cell = coords.flatten
-      fitness_test.(*candidate_cell) ? candidate_cell : nil
+      is_fit, calls = fitness_test.(*candidate_cell)
+      cell_or_nil = is_fit ? candidate_cell : nil
+      [ cell_or_nil, calls ]
     }
   end
 
